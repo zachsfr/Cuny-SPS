@@ -9,7 +9,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=F,message=F)
 
 
 ```
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
 
 ## Loading the Data
 
-```{r,message=FALSE,tidy=FALSE}
+```{r}
 library(DBI)
 library(RPostgres)
 library(readxl)
@@ -37,7 +37,7 @@ Responses <-read_excel("~/CUNY SPS/607/Data/Data 607 - Viewer Reviews (Responses
 \paragraph{} Seen below are the default column names of the dataset. In its current state, it is in no shape to be used in a SQL database.
 
 
-```{r,message=FALSE,tidy=FALSE}
+```{r}
 kable(colnames(Responses),format = 'latex',col.names = 'Column Names') %>%
     kable_styling(full_width = TRUE)
 
@@ -52,7 +52,7 @@ kable(colnames(Responses),format = 'latex',col.names = 'Column Names') %>%
 \paragraph{} As for renaming, the current columns contain unnecessarily long names with a lot of repeated information. It is also important to note this, in the case of long titles such as we have here with the show names, often times it is a much more prudent choice to replace the names with numeric IDs in order to reduce the complexity of the data stored which will increase the speed at which you can query the data. For this example, due how small the data set is, I will keep the names as they are for simplicity. 
 
 
-```{r,tidy=FALSE}
+```{r}
 
 Responses <- Responses %>% 
     mutate(id = row_number()) %>%
@@ -82,7 +82,7 @@ Responses <- Responses %>%
 
 \paragraph{} The output below displays the new column names. We have now made the data far easier to read and use.
 
-```{r,message=FALSE, tidy=FALSE}
+```{r}
 kable(colnames(Responses),format = 'latex',col.names = 'Column Names') %>%
     kable_styling(full_width = F)
 ```
@@ -97,7 +97,7 @@ kable(colnames(Responses),format = 'latex',col.names = 'Column Names') %>%
 
 \paragraph{} In addition, in order to properly quantity the respondents responses, we need to create a numeric column that represents each response. Doing so with dpylr's mutate and case_when functions make this very easy. Using str_detect from stringr to locate each response, we can then change it to the appropriate number, and make the non responses NA values. 
 
-```{r,tidy=FALSE}
+```{r}
 Date <- Responses %>%
         select(id,timestamp)
 
@@ -130,7 +130,7 @@ ShowResponses <- Responses %>%
  
 \paragraph{} Shown below is a look at the three newly created tables.
  
-```{r,message=FALSE}
+```{r}
 kable(head(Date),format = 'latex') %>%
     kable_styling(full_width = F)
 kable(head(Recommendations),format = 'latex') %>%
@@ -196,7 +196,6 @@ SELECT show
 FROM show_responses
 WHERE score = 5;
 
-
 ```
 
 \newpage
@@ -206,7 +205,7 @@ WHERE score = 5;
 \paragraph{} The missing data is valuable information. In the case of this data, it will let us know which shows are not being watched by our 607 classmates. Trying to input values for the missing data would create false results. We do not have enough information here to make inferences about each show. Instead, we will graph the missing values below and discover the most watched show, and the least watched show.
 
 
-```{r,tidy=FALSE}
+```{r}
 
 ShowResponses %>%
   group_by(show) %>%
@@ -216,7 +215,6 @@ ShowResponses %>%
   coord_flip() +
   labs(title = 'Which shows have been watched the least?', y = 'Have not Watched', 
        x= "Show") 
-
 
 ```
 
