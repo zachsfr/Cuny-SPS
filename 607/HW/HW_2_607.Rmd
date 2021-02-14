@@ -95,7 +95,7 @@ kable(colnames(Responses),format = 'latex',col.names = 'Column Names') %>%
 
 \paragraph{} However, we cannot simply reshape the data as it is. Given that the data set contains more specific questions, such as what the respondents favorite genre is, if we were to include that information into the reshaped data, it would get repeated over and over and become unnecessary bloat. Fixing this is simple, we need to create separate data tables where we can look up this information.
 
-\paragraph{} In addition, in order to properly quantity the respondents responses, we need to create a numeric column that represents each response. Doing so with dpylr's mutate and case_when functions make this very easy. Using str_detect from stringr to locate each response, we can then change it to the appropriate number, and make the non responses NA values. 
+\paragraph{} In addition, in order to properly quantity the respondents responses, we need to create a numeric column that represents each response. Doing so with dpylr's mutate and case_when functions make this very easy. We can change each response to the appropriate number, and make the non responses NA values. 
 
 ```{r}
 Date <- Responses %>%
@@ -114,11 +114,12 @@ ShowResponses <- Responses %>%
                                                              `Money Heist`,`Dark Desire`,
                                                              Friends,`The Crown`,Ratched,
                                                              Dark)) %>%
-                   mutate(score = case_when(str_detect(response,"Poor") ~  1,
-                          str_detect(response,"Fair") ~  2,                              
-                          str_detect (response,"Average") ~  3,
-                          str_detect (response,"Good") ~  4,
-                          str_detect (response,"Excellent") ~  5,
+                   mutate(score = case_when(
+                        response == "Poor" ~  1,
+                        response ==   "Fair" ~  2,                              
+                        response ==  "Average" ~  3,
+                        response ==   "Good" ~  4,
+                        response ==   "Excellent" ~  5,
                           TRUE ~ NA_real_))
 
 ```
