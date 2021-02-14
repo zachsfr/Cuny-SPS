@@ -34,7 +34,7 @@ Responses <-read_excel("~/CUNY SPS/607/Data/Data 607 - Viewer Reviews (Responses
 
 ## Deafult Columnn Names
 
-\paragraph{} Seen below are the default column names of the dataset. In its current state, it is no shape to be used in a SQL database.
+\paragraph{} Seen below are the default column names of the dataset. In its current state, it is in no shape to be used in a SQL database.
 
 
 ```{r,message=FALSE,tidy=FALSE}
