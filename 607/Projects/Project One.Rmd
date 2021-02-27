@@ -1,0 +1,198 @@
+---
+title: "DATA 607: Project One"
+author: "Zachary Safir"
+date: "2/22/2021"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+    df_print: paged
+  pdf_document: default
+always_allow_html: yes
+  
+---
+
+```{r setup,  include=FALSE}
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=F,message=F,warning = F)
+
+```
+
+
+## Introduction
+
+|   For this project, we were tasked with working on a chess tournament data set. The challenge for this project arose from the format of the data. It was given to us in the form of a text file that used vertical bars to separate the columns and under scores to separate the rows. The image below is a sample from the raw text file. The goal of this project is to get the data in a normalized format that can be easily read into other software, such as SQL. We specifically want the following columns in the final dataset; Players Name, Player’s State, Total Number of Points, Player’s Pre-Rating, and Average Pre Chess Rating of Opponents. For the first player, the information would be: Gary Hua, ON, 6.0, 1794, 1605. 1605 was calculated by using the pre-tournament opponents’ ratings of 1436, 1563, 1600, 1610, 1649, 1663, 1716, and dividing by the total number of games played.
+|
+|
+```{r, echo=F}
+
+knitr::include_graphics("https://raw.githubusercontent.com/zachsfr/Cuny-SPS/main/607/Images/chess.png")
+```
+
+
+
+## Loading my Libraries and Data
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+library(knitr)
+library(DT)
+
+my_data <- 
+read.table(file= "https://raw.githubusercontent.com/zachsfr/Cuny-SPS/main/Data/tournamentinfo.txt",
+                      fill = T, sep = '|', skip = 2, header = T)
+
+ 
+
+```
+
+## Initial Shape of the Data
+
+|   By playing with the parameters in read.table, I was able to get my data in somewhat proper shape on the initial load itself. Without adding any parameters, the table is read in as one column and requires a lot of parsing in order to be fixed. There are still many clear and obvious issues with the data as it is. The table read method decided to place all the underscores used in the data set into their own column. It also created a null column, most likely due to the fact that the original text file ended with a vertical bar that I used to separate the columns. My initial dataset can be seen below.
+|
+|
+```{r,echo=F}
+datatable(my_data)
+
+```
+
+## First Step
+|   The first step to fixing the data is clear. I have to remove the rows that contain nothing but underscores and drop the null column. Doing this alone makes the data look much better. However, there is still a lot that is very wrong with my data. Currently, the information for each player fills up two whole rows. I need to find a way to get their information into one row each.
+|
+|
+```{r}
+my_data <- my_data %>%
+  select(-X) %>%
+  filter(
+Num!="-----------------------------------------------------------------------------------------") 
+
+```
+
+|
+|
+
+```{r,echo=F}
+datatable(my_data)
+
+```
+
+## Second Step
+
+|   Fixing the problem mentioned above is very simple. As the data is cleanly doubled by the split information, all we need to do is create two separate data sets and then recombine them. As the first piece of information on each player is their number, and the second is the state they are from, all we need to do is check for numeric values to create the first data set, and then check for character values in creating the second. Once we have the data separated, we can then recombine them back together, which will fix our problem.
+|
+|   The second problem that needs fixing is in the second column. Three values are residing within it that need to be separated. Using Regex commands to look for key characters solves our problem. The ID for example, is numeric and after it ends there is always a space. Looking for the first numeric values in each column will allow us to pull that information. For each players pre game rating, that information is always proceeded by the same "R:" symbols. Likewise, the post game score always has a -> symbol before it. We need to be careful for whitespaces here as a few records have an extra space in them. The fixed up data set is shown below. 
+
+|
+|
+```{r}
+data1 <- my_data %>%
+  filter(str_detect(Num, "[A-Z]")) %>%
+  select(Num,USCF.ID...Rtg..Pre..Post.) %>%
+  rename(state=Num)
+
+data2 <- my_data %>%
+
+  filter(!str_detect(Num, "[A-Z]")) %>%
+  rename(player_name= USCF.ID...Rtg..Pre..Post.)
+
+data <- cbind(data1,data2) %>%
+  
+  mutate( USCF_ID =str_extract(USCF.ID...Rtg..Pre..Post.,"[0-9]+"),
+
+          Pre_Rating = str_extract(USCF.ID...Rtg..Pre..Post.,"(?<=R: |R:  )[0-9]+(?=)"),
+
+          Post_Rating =str_extract(USCF.ID...Rtg..Pre..Post.,"(?<=->|-> )[0-9]+(?=)") ,
+
+          .keep =("unused"))
+```
+|
+|
+```{r,echo=F}
+datatable(data)
+```
+
+## Third Step
+|
+### Part One 
+
+|   In the final step, we calculate the pre tournament rating average of each players opponents during the tournament. This is most efficiently done using dplyr's summarize method. For summarize to work however, each value must reside within one column. Accomplishing this is no issue. Using gather, we can re-arrange the data into the shape we want. 
+|
+|
+```{r}
+player_data <- data %>%
+   select(Pre_Rating,Num,X1:X7) %>%
+  gather(key='round',value="result" ,X1:X7) %>%
+  mutate(opponet_num = str_extract(result,"[0-9]+"), 
+         .keep =("unused")) 
+```
+|
+|
+```{r,echo=F}
+datatable(player_data)
+```
+|
+### Part Two 
+
+|   Now that we have the data in the shape we need, we can figure out how get the proper opponent ratings matched up with our players. At first, I tried to think of some complicated method using matrices or something of that nature. However, I realized that getting the desired result does not require anything complicated whatsoever. We have both the player number and opponent number in our data. So, why not use our data as our key? We can use an inner join with our original data set to figure out the pre-rating values for each player. 
+|
+|   With all the pieces in place, we can use summarize on our values and then recombine them back to the original dataset. Using a few select and relocate commands,  we have now successfully created a data set that is in the shape that we desire.
+|
+|
+```{r}
+data <- type.convert(data)
+player_data <- type.convert(player_data)
+
+final<- player_data %>%
+  inner_join(data, c("opponet_num" = "Num")) %>%
+  group_by(Num) %>%
+  summarize(Avg_opp_score= round(mean(Pre_Rating.y),1)) %>%
+  select(!Num) %>%
+  cbind(data) %>% 
+  select(!c(X1:X7,Post_Rating,USCF_ID,Num)) %>%
+  relocate(Avg_opp_score, .after = last_col()) %>%
+  relocate(player_name)
+```
+|
+|
+```{r,echo=F}
+datatable(final)
+```
+
+## Creating a CSV File
+|   The following line of code creates a CSV file out of the final dataset created above. This CSV file, as well as a copy of the original data can be found at  https://github.com/zachsfr/Cuny-SPS/tree/main/Data.
+| 
+| 
+```{r}
+write.csv(final,"chess.csv",row.names=FALSE)
+```
+## Optional
+
+|   The code below shows an efficient way to ascertain the information regarding each players opponents and round outcomes. This is not required for this assignment however, if we were to do further analysis on the data, having more information to work with would be very important. Using mutate_at, we can quickly pull out the required information from the round column. As far as I know, there isn't a way to do this in one pipe chain, so I made two separate data sets and then recombined them back together. We can use this table in conjunction with our final data set in order to do further analysis.
+|
+|
+```{r}
+d <- data %>% mutate_at(.vars = c("X1","X2","X3","X4","X5","X6","X7"), function (x) {
+            str_extract(x,"[0-9]+") } ) %>%
+  select(player_name,X1:X7) %>%
+  rename( Opp1 = X1,Opp2= X2,Opp3 = X3,Opp4= X4, Opp5 =X5,Opp6 = X6, Opp7 =X7)  
+
+
+d2 <- data %>% 
+  mutate_at(.vars = c("X1","X2","X3","X4","X5","X6","X7"), function (x) {
+            str_extract(x,"[A-Z]") } ) %>%
+    select(X1:X7) %>%
+  rename( Result1 = X1,Result2= X2,Result3 = X3,Result4= X4, Result5 =X5,Result6 = X6, Result7 =X7)  
+
+
+optional <- cbind(d,d2)
+```
+|
+|
+```{r, echo=F}
+datatable(optional)
+```
+
+## Conclusion
+|   This project had us challenge our selves with a very unusually formatted data set. I was able to avoid much of the hassle of having to parse the data. While it's good to challenge yourself as much as possible, understanding how to more efficiently handle data is far more important. Time is a precious resource that can be wasted if you don't know how to make your software work to its full capacity.
+|
+|   I hope this project also highlighted the power of tidyverse. With very little code you can make a lot happen. Making full use of the various functions within R and the pipe command, you can quickly and efficiently clean and arrange data in many ways. Thank you very much for taking the time to read my project.
