@@ -1,0 +1,156 @@
+---
+title: "Untitled"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+\paragraph{} For this project we were tasked to ... . I decided to use a data set collected by one of the students in the DATA 607 class. It is an excellent example of raw data collection that requires some data cleaning to be done before it can be used in a SQL Database. The following sections will demonstrate the process for that cleaning, and from there the data will be loaded into SQL where I will show some queries using the loaded data.
+
+
+```{r}
+library(DBI)
+library(RPostgres)
+library(readxl)
+library(tidyverse)
+
+Responses <-read_excel("~/CUNY SPS/607/Data/Data 607 - Viewer Reviews (Responses).xlsx")
+
+pg = dbDriver("PostgresSQL")
+con <- dbConnect(pg,user='postgres', password='zach',dbname='zach')
+
+```
+
+#con <- dbConnect(RPostgres::Postgres(),user='postgres', password='zach',dbname='zach')
+
+```{r}
+Responses
+```
+##
+
+\paragraph{} The first step in correct this data will be fixing the columns. Specifically, adding an ID column to each respondent and renaming the current columns. The ID column is extremely important information to help distinguish each observation. It will become even more important in the next section when we reshape the data. 
+
+\paragraph{} As for renaming, the current columns contain unnecessarily long names with a lot of repeated information. It is also important to note this, in the case of long titles such as we have here with the show names, often times it is a much more prudent choice to replace the names with IDs in order to reduce the complexity of the data stored which will increase the speed at which you can query the data. For this example, due how small the data set is, I will keep the names as they are for simplicity. 
+
+
+```{r}
+
+Responses <- Responses %>% 
+    mutate(ID = row_number()) %>%
+    relocate(ID) %>%
+    rename(`The Queens Gambit` = `Top 10 Most Watched Netflix Shows in 2020 [The Queens Gambit]`, `Emily in Paris` = `Top 10 Most Watched Netflix Shows in 2020 [Emily in Paris]`, `Lucifer` = `Top 10 Most Watched Netflix Shows in 2020 [Lucifer]`, `The Umbrella Academy` = `Top 10 Most Watched Netflix Shows in 2020 [The Umbrella Academy]`, `Money Heist` = `Top 10 Most Watched Netflix Shows in 2020 [Money Heist]`, `Dark Desire` = `Top 10 Most Watched Netflix Shows in 2020 [Dark Desire]`,`Friends` = `Top 10 Most Watched Netflix Shows in 2020 [Friends]`,`The Crown` = `Top 10 Most Watched Netflix Shows in 2020 [The Crown]`,`Ratched` = `Top 10 Most Watched Netflix Shows in 2020 [Ratched]`,`Dark` = `Top 10 Most Watched Netflix Shows in 2020 [Dark]`,`FavGenre` = `Which TV and/or movie genres do you enjoy watching most?`, `LeastFavGenre` = `Which TV and/or movie genres do you enjoy watching least?`,`AvgTimeWatching` = `On average, how many hours a week do you spend on Netflix each week?`, `Recommend` =  `What movie or TV show on Netflix or other streaming services would you highly recommend to adults that wasn't on this list?`)
+
+
+
+```
+
+
+
+```{r}
+Responses
+```
+
+
+##Subsetting and reshaping the Data
+
+\paragraph{} The raw data had each show displayed in separate columns. While this may make it easy to view for a person, it makes it very challenging to query from. The data shape we need is one where all the shows reside in a singular column. This is where the ID column becomes especially useful for keeping track of which response belongs to who. 
+
+\paragraph{} However, we cannot simply reshape the data as it is. Given that the data set contains more specific questions, such as what the respondents favorite genre is, if we were to include that information into the reshaped data, it would get repeated over and over and become unnecessary bloat. Fixing this is simple, we need to create separate data tables where we can look up this information.
+
+```{r}
+Date <- Responses %>%
+        select(ID,Timestamp)
+
+Recommendations <- Responses %>%
+                    select(ID,FavGenre,LeastFavGenre,AvgTimeWatching,Recommend)
+
+ShowResponses <- Responses %>% 
+                    select(ID,`The Queens Gambit`,`Emily in Paris`, Lucifer,`The Umbrella Academy`,`Money Heist`,`Dark Desire`,Friends,`The Crown`,Ratched,Dark) %>%
+                    gather(key = 'Show',value = 'Response',c(`The Queens Gambit`,`Emily in Paris`, Lucifer,`The Umbrella Academy`,`Money Heist`,`Dark Desire`,Friends,`The Crown`,Ratched,Dark))
+
+
+
+```
+ 
+ 
+ 
+ 
+```{r}
+ShowResponses
+```
+ 
+ 
+```{r}
+dbWriteTable(con,'ShowResponse',ShowResponses,row.names=FALSE,overwrite=TRUE)
+```
+ 
+ 
+```{r}
+dtab = dbGetQuery(con,"select * from ShowResponses")
+```
+ 
+ 
+
+```{sql connection=con}
+
+CREATE TABLE ShowResponses (
+    ID int,
+    Show CHAR(255),
+    Response CHAR(255) 
+
+);
+
+```
+
+
+```{r}
+
+ con2 <- set_connString(RPostgres::Postgres(),  usr ='postgres', pwd= 'zach')
+
+
+```
+
+
+
+```{r}
+
+push_data(connectionString=con,df = ShowResponses, sqltabname ='ShowResponses')
+
+```
+
+
+
+```{sql connection=con}
+
+DROP TABLE ShowResponses;
+```
+
+```{sql connection=con}
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+
+
+```{sql connection=con}
+InSERT INTO persons
+VALUES (21121,'Paul','Sam','95 peach trees','None')
+
+```
+
+
+
+
+```{sql connection=con}
+SELECT * FROM showresponses;
+```
+
+
+
+

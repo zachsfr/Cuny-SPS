@@ -1,0 +1,114 @@
+---
+title: 'DATA 607: Assignment Three'
+author: "Zachary Safir"
+date: "2/17/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#1. Using the 173 majors listed in fivethirtyeight.com’s College Majors dataset [https://fivethirtyeight.com/features/the-economic-guide-to-picking-a-college-major/], provide code that identifies the majors that contain either "DATA" or "STATISTICS"
+
+```{r}
+majors <- read.csv(url("https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv"))
+
+```
+
+```{r}
+
+grep(pattern = 'Data|Statistics', majors$Major, value = TRUE, ignore.case = TRUE)
+
+ ```
+
+#2 Write code that transforms the data below:
+
+
+[1] "bell pepper"  "bilberry"     "blackberry"   "blood orange"
+
+[5] "blueberry"    "cantaloupe"   "chili pepper" "cloudberry"  
+
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+
+[13] "olive"        "salal berry"
+
+Into a format like this:
+
+c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry")
+
+
+```{r}
+original <- data.frame(c("bell pepper", "bilberry", "blackberry", "blood orange", "blueberry", "cantaloupe", "chili pepper", "cloudberry", "elderberry", "lime", "lychee", "mulberry", "olive", "salal berry"))
+
+cat(paste(original), collapse=", ")
+
+```
+
+#3 Describe, in words, what these expressions will match:
+
+    (.)\1\1
+    "(.)(.)\\2\\1"
+    (..)\1
+    "(.).\\1.\\1"
+    "(.)(.)(.).*\\3\\2\\1"
+    
+First I will load the stringr library and create a data set that I will use in both part three and four.
+    
+```{r}
+library(stringr)
+ stringdata <- c("dog","poolpool","sample\1\1","sample\1",'roor',"church","anadana","eleven","DAD.,","PAUL","kyyyak","23235","mm.\1\1\1",'3003','pnnp',"woopanpanpanpanpantoow","woopanpanpanpanpantyoow",'rooor',"21\1\1","\1","DAD")
+```
+
+The first expression,   (.)\1\1, matches a character followed the string \1\1. Notice how "sample\1" did not work, it needs to match it exactly.
+
+```{r}
+str_view(stringdata, '(.)\1\1', match = TRUE)
+```
+
+This regular expression will match four letter palindromes. Works on numbers too. 
+
+
+```{r}
+str_view(stringdata, '(.)(.)\\2\\1', match = TRUE)
+
+```
+This regular expression will match with strings that have a some combination of characters followed by a /1. Will not match \1 if it is alone without a character in front of it.
+
+```{r}
+str_view(stringdata, '(..)\1', match = TRUE)
+
+```
+
+This regular expression will match any string that the begins and ends with the same three characters, one side in reverse order. For example, if you start with woo, you can add any number of characters in the middle, as long as you end the string with oow, it will match.
+
+```{r}
+str_view(stringdata, "(.)(.)(.).*\\3\\2\\1", match = TRUE)
+
+```
+
+
+
+#4 Construct regular expressions to match words that:
+
+* Start and end with the same character.
+```{r}
+str_subset(stringdata, "^(.)((.*\\1$)|\\1?$)")
+```
+
+*    Contain a repeated pair of letters (e.g. "church" contains "ch" repeated twice.)
+```{r}
+str_subset(stringdata, "([A-Za-z][A-Za-z]).*\\1")
+
+```
+
+
+*    Contain one letter repeated in at least three places (e.g. "eleven" contains three "e"s.)
+
+```{r}
+str_subset(stringdata, "([a-z]).*\\1.*\\1")
+```
+
