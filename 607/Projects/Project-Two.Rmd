@@ -1,5 +1,5 @@
 ---
-title: "Project Two"
+title: "DATA 607:Project Two"
 author: "Zachary Safir"
 date: "3/9/2021"
 output:
@@ -134,11 +134,20 @@ datatable (mysheets[[2]])
 ```
 
 ## Data 1, Part Four
-|   One of the major problems we have in fixing the data comes from the original format. As seen in the image from the data open in excel earlier, and in the tidier table above, the original data set not only put the original variables names above the year information, but also had them side by side. As a result, in the tidier table above, we have no information letting us know that the first 2,000 and 2014-2018 colum is for females, and that the second set is for males. 
+|   One of the major problems we have in fixing the data comes from the original format. As seen in the image from the data open in excel earlier, and in the tidier table above, the original data set not only put the original variables names above the year information, but also had them side by side. As a result, in the tidier table above, we have no information letting us know that the first 2,000 and 2014-2018 columns are for females, and that the second set are for males. 
 |
-|   However, fixing this problem has become trivial with the introduction of pivot_longer. It allows us to pull information from the column names to be used to fill in new columns. By re-naming our columns with information we want in our final data frame, we can then use the parameters in pivot_longer to pull in that information, filling in the new columns we want to create. The second completely tidied second table can be seen below.
+|   However, fixing this problem has become trivial with the introduction of pivot_longer. It allows us to pull information from the column names to be used to fill in new columns. By re-naming our columns with information we want in our final data frame, we can then use the parameters in pivot_longer to pull in that information, filling in the new columns we want to create. The second completely tidied second table can be seen below the code.
+|
+|   As an additional note, the extra code in the first function was used to fix an issue that can be viewed in the original data inside of excel. That extra bit of information added at the end of only Table 1 was read in when we used our reader function. It's extremely important you take extra care to notice abnormalities such as this when cleaning untidy data.
+
+```{r, echo=F}
+knitr::include_graphics("https://i.gyazo.com/d8a58ce7e0a0f8dcc54e0bd5addb23ec.png")
+
+```
+
 |
 |
+
 ```{r}
 
 
