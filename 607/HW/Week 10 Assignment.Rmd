@@ -1,0 +1,311 @@
+---
+title: "Data 607: Week 10 Assignment"
+author: "Zachary Safir"
+date: "4/16/2021"
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = F,warning=F)
+```
+
+```{r}
+library(janeaustenr)
+library(tidyverse)
+library(stringr)
+library(tidytext)
+
+```
+
+
+
+## Introduction 
+|   For this assignment, we will be exploring and building off of the code presented in [this](https://www.tidytextmining.com/sentiment.html) web textbook. (MLA citation: 
+Silge, Julia, and David Robinson. Text Mining with R: A Tidy Approach. , 2017. Internet resource.)
+|
+|   The first part of this assignment is taken directly from their example code. From there, I use what they taught on another text data set and see what results I can produce. 
+
+
+## Example Code
+
+```{r}
+tidy_books <- austen_books() %>%
+  group_by(book) %>%
+  mutate(
+    linenumber = row_number(),
+    chapter = cumsum(str_detect(text, 
+                                regex("^chapter [\\divxlc]", 
+                                      ignore_case = TRUE)))) %>%
+  ungroup() %>%
+  unnest_tokens(word, text)
+
+```
+
+```{r,echo=F}
+tidy_books
+```
+
+
+```{r}
+nrc_joy <- get_sentiments("nrc") %>% 
+  filter(sentiment == "joy")
+
+tidy_books %>%
+  filter(book == "Emma") %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE)
+```
+
+
+```{r}
+
+jane_austen_sentiment <- tidy_books %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(book, index = linenumber %/% 80, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative)
+```
+
+
+```{r}
+ggplot(jane_austen_sentiment, aes(index, sentiment, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~book, ncol = 2, scales = "free_x")
+```
+
+
+```{r}
+pride_prejudice <- tidy_books %>% 
+  filter(book == "Pride & Prejudice")
+```
+
+
+
+```{r}
+afinn <- pride_prejudice %>% 
+  inner_join(get_sentiments("afinn")) %>% 
+  group_by(index = linenumber %/% 80) %>% 
+  summarise(sentiment = sum(value)) %>% 
+  mutate(method = "AFINN")
+
+bing_and_nrc <- bind_rows(
+  pride_prejudice %>% 
+    inner_join(get_sentiments("bing")) %>%
+    mutate(method = "Bing et al."),
+  pride_prejudice %>% 
+    inner_join(get_sentiments("nrc") %>% 
+                 filter(sentiment %in% c("positive", 
+                                         "negative"))
+    ) %>%
+    mutate(method = "NRC")) %>%
+  count(method, index = linenumber %/% 80, sentiment) %>%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = 0) %>% 
+  mutate(sentiment = positive - negative)
+```
+
+
+
+```{r}
+bind_rows(afinn, 
+          bing_and_nrc) %>%
+  ggplot(aes(index, sentiment, fill = method)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~method, ncol = 1, scales = "free_y")
+```
+
+
+
+## Working with New Data
+|   From the corpustools library, we can find a data set containing State of the Union Addresses from George W. Bush and Barack Obama. We can use the skills we learned above to analyze both presidents words.  
+
+
+```{r}
+library(corpustools)
+```
+
+|
+|
+```{r, echo = F}
+sotu_texts
+```
+
+
+
+```{r}
+tidy_speech <- sotu_texts %>%
+  mutate(
+    linenumber = row_number()) %>%
+  unnest_tokens(word, text)
+```
+
+|   Shown below are the top words for each president. There are significant differences, such as freedom being a very common word for Bush, but not Obama. And likewise, the word clean comes up often for Obama, but not for Bush.
+
+```{r}
+
+tidy_speech %>%
+  filter(party == "Democrats") %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE)
+
+
+tidy_speech %>%
+  filter(party == "Republicans") %>%
+  inner_join(nrc_joy) %>%
+  count(word, sort = TRUE)
+
+```
+
+
+|   Since the text is much smaller than the example data, I used much smaller line sizes.  Overall, both presidents gave very positive speeches with very little negativity. 
+
+```{r}
+union_sentiment <- tidy_speech %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(president, index = linenumber %/% 10, sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment = positive - negative)
+```
+
+
+
+
+```{r}
+ggplot(union_sentiment, aes(index, sentiment, fill = president)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~president, ncol = 2, scales = "free_x")
+```
+
+```{r}
+bad_sentiments <- get_sentiments("nrc") %>% 
+  filter(sentiment %in% c("negative"))
+```
+
+
+| Some more interesting differences can be seen in the negative terms each president used. 
+
+```{r}
+tidy_speech %>%
+  filter(party == "Democrats") %>%
+  inner_join(bad_sentiments) %>%
+  count(word, sort = TRUE)
+
+
+tidy_speech %>%
+  filter(party == "Republicans") %>%
+  inner_join(bad_sentiments) %>%
+  count(word, sort = TRUE)
+
+```
+
+```{r}
+library(lexicon)
+```
+
+
+```{r}
+
+pos_preposition <- data.frame(pos_preposition) %>%
+                      rename(word = pos_preposition)
+
+```
+
+
+|   Using a different lexicon from the lexicon library, the results it gives us aren't too useful. 
+
+```{r}
+tidy_speech %>%
+  filter(party == "Democrats") %>%
+  inner_join(pos_preposition) %>%
+  count(word, sort = TRUE)
+
+
+tidy_speech %>%
+  filter(party == "Republicans") %>%
+  inner_join(pos_preposition) %>%
+  count(word, sort = TRUE)
+```
+
+|   The following lexicons give use more interesting results. The first one uses -1 for negative sentiments and 1 for positive ones. Adapting the original code to work with this is very simple. The next two lexicons were a bit more involved. They have a range of values between -1 and 1. First we add a column that determines if a value is either negative or positive. The code given to us only works if we have a binary condition. However, in the count method, we are able to use the wt command to multiply our counts by the weights given in the lexicon. The results can be seen below. 
+
+```{r}
+union_sentiment_huliu <- tidy_speech %>%
+  inner_join(hash_sentiment_huliu, b  = c ("word"="x")) %>%
+  count(president, index = linenumber %/% 10, y) %>%
+  pivot_wider(names_from = y, values_from = n, values_fill = 0,names_prefix   = c("neg","pos")) %>% 
+  mutate(sentiment = pos1 - `neg-1`)
+```
+
+
+
+```{r}
+ggplot(union_sentiment_huliu, aes(index, sentiment, fill = president)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~president, ncol = 2, scales = "free_x")
+```
+
+
+
+```{r}
+
+union_sentiment_jockers  <- tidy_speech %>%
+  inner_join(hash_sentiment_jockers  , b  = c ("word"="x")) %>%
+  mutate(sentiment = if_else(y >0,"pos","neg")) %>%
+  count(president, index = linenumber %/% 10, sentiment, wt = abs(y))%>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment =   pos-neg ) 
+
+  
+
+```
+
+
+
+
+```{r}
+parse_number("saddsa-22")
+```
+
+
+
+```{r}
+ggplot(union_sentiment_jockers, aes(index, sentiment, fill = president)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~president, ncol = 2, scales = "free_x")
+```
+
+
+
+```{r}
+union_sentiment_jockers_rinker  <- 
+  tidy_speech %>%
+  inner_join(hash_sentiment_jockers_rinker  , b  = c ("word"="x")) %>%
+   mutate(sentiment = if_else(y >0,"pos","neg")) %>%
+  count(president, index = linenumber %/% 10, sentiment, wt = abs(y))%>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(sentiment =   pos-neg ) 
+```
+
+
+
+```{r}
+ggplot(union_sentiment_jockers_rinker, aes(index, sentiment, fill = president)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~president, ncol = 2, scales = "free_x")
+```
+
+
+
+
+
+## Conclusion 
+|   Overall, it appears that the  first lexicon we used, the Hu Liu Polarity lookup table, gave us the most variability of the lexicons we tested from the lexicon package. If we were to add more to our assignment, it would be testing more text data and trying more lexicons. There is much more to uncover for sure! 
+
+
+
+
