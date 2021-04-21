@@ -40,6 +40,8 @@ library(tidyverse)
 starwars
 ```
 
+
+
 ```{r}
 blond_wars <- starwars %>%
   select(!c(films,vehicles,starships)) %>%
