@@ -1,0 +1,62 @@
+---
+title: "Untitled"
+author: "Zachary Safir"
+date: "2/25/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+data %>%
+  select(player_name,X1:X7,Pre_Rating) %>%
+pivot_longer(X1:X7)
+```
+ 
+ 
+```{r}
+test <- getURL ( 'http://flourishoa.org/api/journals/')
+```
+ 
+ 
+ 
+ 
+```{r}
+t <- fromJSON(test)
+```
+ 
+ 
+ 
+ 
+```{r}
+r <- read_csv('https://raw.githubusercontent.com/dmoscoe/SPS/main/DATA607/untidied.csv') 
+```
+ 
+```{r}
+
+df <- data.frame(X1 = c("Alaska",NA, NA,"AM West",NA),
+                 X2 = c("on time","delayed",NA,"on time","delayed"),
+                 `Los Angeles` = c(497,62,NA,694,117)
+                 
+                 )
+```
+ 
+ 
+```{r}
+commit(df,"~/GitHub/RTest")
+```
+
+
+
+
+```{r}
+"~/GitHub/RTest" <- tempfile(pattern="git2r-")
+
+
+
+```
+ 
+ 

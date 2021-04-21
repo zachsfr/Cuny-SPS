@@ -1,0 +1,126 @@
+---
+title: "TidyVerse"
+author: "Zachary Safir"
+date: "4/10/2021"
+output: 
+  html_document:
+    df_print: paged 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message = F,warning = F)
+```
+
+
+```{r}
+library(tidyverse)
+```
+
+
+
+## Introduction
+|   The tidyverse contains a collection of data science packages that work together in harmony to accomplish various goals. This vignette will demonstrate several ways to make full use of their combined capability. 
+
+## The Data
+|   For this demonstration, we will use a dataset that is included with dpylr itself. It contains data on the characters from the Starwars series. Specifically, various pieces of information that describe each character.
+|
+|
+```{r}
+starwars
+```
+
+|
+|
+|   Interestingly, some of the columns are full of lists. The column displayed below, shows which films a character appeared in.
+|
+|
+```{r}
+head(starwars$films)
+```
+
+|
+|
+|   The first thing to figure out is how to pick out only characters that appear in certian films. In order to use filter from dpylr on a list, we need to use a purr function with it. As filter is expecting a logical value, we need to return something logical. Using map_lgl, we can accomplish this.
+|
+|
+
+```{r}
+starwars %>%
+filter(map_lgl(films,~ "Attack of the Clones" %in% .))
+
+```
+|
+|
+|   In order to use filter on multiple values, we need to use the base R function "all". 
+|
+|
+
+```{r}
+starwars %>%
+filter(map_lgl(films,~ all( c("Attack of the Clones","A New Hope") %in% .)))
+```
+|
+|
+|   We can also use tidyr in order to flatten our lists full of data out. The resulting dataframe of this action is shown below.
+|
+|
+
+```{r}
+starwars %>%
+  select(name,films) %>%
+  unnest(films)
+  
+```
+|
+|
+|   With our data in a normal format, we can use the dpylr count function to discover which film is most common.
+|
+|
+
+```{r}
+starwars %>% 
+  unnest(films) %>%
+  count(films) %>%
+  arrange(n)
+  
+```
+|
+|
+|   Another interesting function comes from forcats. In the previous example, we had a small number of a categories. However, quite often we will have a handful of common categories, and a whole bunch of other smaller groups. In such a case, we can use the forcats fct_lump to grab the most common categories, and lump the least most into a Other category.  
+|
+|
+
+```{r}
+starwars %>%
+  filter(!is.na(homeworld)) %>%
+  mutate(homeworld = fct_lump(homeworld, n = 3)) %>%
+  count(homeworld) %>%
+  arrange(n)
+```
+
+|
+|
+|   Finally, we will demonstrate the fct_infreq function. In the first plot shown below, by default the plot is not ordered in any kind of way. However, by using fct_infreq in the second plot, we are able to reorder the values by their frequency in the data.
+|
+|
+
+```{r}
+starwars %>% 
+  unnest(films) %>%
+  ggplot(aes(films)) +
+    geom_bar() +
+    coord_flip()
+    
+```
+
+```{r}
+starwars %>% 
+  unnest(films) %>%
+  mutate(films = fct_infreq(films)) %>%
+  ggplot(aes(films)) +
+    geom_bar() +
+    coord_flip()
+```
+
+
+

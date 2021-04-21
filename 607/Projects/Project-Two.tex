@@ -1,0 +1,354 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Project Two},
+  pdfauthor={Zachary Safir},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Project Two}
+\author{Zachary Safir}
+\date{3/9/2021}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(DT)}
+\FunctionTok{library}\NormalTok{(DBI)}
+\FunctionTok{library}\NormalTok{(RPostgres)}
+\FunctionTok{library}\NormalTok{(readxl)}
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\FunctionTok{library}\NormalTok{(knitr)}
+\FunctionTok{library}\NormalTok{(kableExtra)}
+\FunctionTok{library}\NormalTok{(janitor)}
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+For this project, we were tasked with cleaning untidy data into a R
+friendly format that can used for analysis.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{read\_excel\_allsheets }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(filename, }\AttributeTok{tibble =} \ConstantTok{FALSE}\NormalTok{) \{}
+\NormalTok{    sheets }\OtherTok{\textless{}{-}}\NormalTok{ readxl}\SpecialCharTok{::}\FunctionTok{excel\_sheets}\NormalTok{(filename)}
+\NormalTok{    x }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(sheets, }\ControlFlowTok{function}\NormalTok{(X) readxl}\SpecialCharTok{::}\FunctionTok{read\_excel}\NormalTok{(filename, }\AttributeTok{sheet =}\NormalTok{ X,}\AttributeTok{skip =} \DecValTok{11}\NormalTok{, }\AttributeTok{col\_names =}\NormalTok{ T, }\AttributeTok{.name\_repair =} \StringTok{"unique"}\NormalTok{ ))}
+    \ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\NormalTok{tibble) x }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(x, as.data.frame)}
+    \FunctionTok{names}\NormalTok{(x) }\OtherTok{\textless{}{-}}\NormalTok{ sheets}
+\NormalTok{    x}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mysheets }\OtherTok{\textless{}{-}} \FunctionTok{read\_excel\_allsheets}\NormalTok{(}\StringTok{"\textasciitilde{}/CUNY SPS/Cuny{-}SPS/607/Projects/Project 2/Hurricane/New\_Orleans\_Demographics{-}main/New\_Orleans\_Demographics{-}main/New Orleans Neighborhood profiles data tables.xlsx"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{options}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+
+\NormalTok{extra }\OtherTok{\textless{}{-}}\NormalTok{ mysheets[}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{)]}
+
+
+\NormalTok{mysheets[[}\DecValTok{1}\NormalTok{]] }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{mysheets[[}\DecValTok{1}\NormalTok{]] }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{https://i.gyazo.com/db019b543e3ea73f570e7f13575e94c2.png}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ mysheets}\OtherTok{\textless{}{-}} \FunctionTok{map}\NormalTok{(mysheets, }\SpecialCharTok{\textasciitilde{}}\NormalTok{ .x }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{remove\_empty}\NormalTok{(}\StringTok{"cols"}\NormalTok{)   }\SpecialCharTok{\%\textgreater{}\%}
+     \FunctionTok{rename}\NormalTok{(}\AttributeTok{neighborhood =}\NormalTok{ ...}\DecValTok{1}\NormalTok{)   }\SpecialCharTok{\%\textgreater{}\%}
+       \FunctionTok{select}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{starts\_with}\NormalTok{(}\StringTok{"M"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+       \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.character), }\SpecialCharTok{\textasciitilde{}}\NormalTok{fauxnaif}\SpecialCharTok{::}\FunctionTok{na\_if\_in}\NormalTok{(., }\FunctionTok{c}\NormalTok{(}\StringTok{"NaN\%"}\NormalTok{,}\StringTok{"na"}\NormalTok{))))  }\SpecialCharTok{\%\textgreater{}\%}
+       \FunctionTok{type.convert}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+        \FunctionTok{clean\_names}\NormalTok{() }
+     
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{https://i.gyazo.com/f8179297e457ca74a7b06aa1009ea0f2.png}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{datatable}\NormalTok{ (mysheets[[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{datatable}\NormalTok{ (mysheets[[}\DecValTok{2}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mysheets[[}\DecValTok{1}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ mysheets}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{Table 1}\StringTok{\textasciigrave{}} \SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{str\_detect}\NormalTok{(neighborhood,}\StringTok{"}\SpecialCharTok{\textbackslash{}\textbackslash{}}\StringTok{*|\^{}So|na"}\NormalTok{) )  }\SpecialCharTok{\%\textgreater{}\%}
+
+\FunctionTok{rename}\NormalTok{(}\AttributeTok{p\_2000=}\NormalTok{ x2000\_2,}\StringTok{\textasciigrave{}}\AttributeTok{p\_2014{-}2018}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{x2014\_2018\_3, }\AttributeTok{t\_2000 =}\NormalTok{ x2000\_6, }\StringTok{\textasciigrave{}}\AttributeTok{t\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_7,}
+        \AttributeTok{f\_2000=}\NormalTok{ x2000\_10, }\StringTok{\textasciigrave{}}\AttributeTok{f\_2014{-}2018}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{ x2014\_2018\_11)  }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\AttributeTok{cols =}\NormalTok{ p\_2000}\SpecialCharTok{:}\StringTok{\textasciigrave{}}\AttributeTok{f\_2014{-}2018}\StringTok{\textasciigrave{}}\NormalTok{,}
+             \AttributeTok{names\_to =} \FunctionTok{c}\NormalTok{(}\StringTok{"pop\_type"}\NormalTok{,}\StringTok{"year"}\NormalTok{),}
+             \AttributeTok{names\_pattern =} \StringTok{"(.)\_([0{-}9]+{-}[0{-}9]+|[0{-}9]+)"}
+\NormalTok{  )}
+
+
+
+\NormalTok{mysheets[[}\DecValTok{2}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ mysheets}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{Table 2}\StringTok{\textasciigrave{}} \SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{m\_2000=}\NormalTok{ x2000\_2,}\StringTok{\textasciigrave{}}\AttributeTok{m\_2014{-}2018}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{x2014\_2018\_3, }\AttributeTok{f\_2000 =}\NormalTok{ x2000\_6, }\StringTok{\textasciigrave{}}\AttributeTok{f\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_7) }\SpecialCharTok{\%\textgreater{}\%}
+
+\FunctionTok{pivot\_longer}\NormalTok{(}\AttributeTok{cols =}\NormalTok{ m\_2000}\SpecialCharTok{:}\StringTok{\textasciigrave{}}\AttributeTok{f\_2014{-}2018}\StringTok{\textasciigrave{}}\NormalTok{,}
+             \AttributeTok{names\_to =} \FunctionTok{c}\NormalTok{(}\StringTok{"gender"}\NormalTok{,}\StringTok{"year"}\NormalTok{),}
+             \AttributeTok{names\_pattern =} \StringTok{"(.)\_([0{-}9]+{-}[0{-}9]+|[0{-}9]+)"}
+\NormalTok{  )}
+
+
+
+
+
+\NormalTok{mysheets[[}\DecValTok{3}\NormalTok{]] }\OtherTok{\textless{}{-}}\NormalTok{ mysheets}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{Table 3}\StringTok{\textasciigrave{}} \SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{0t4\_2000}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{ x2000\_2,}\StringTok{\textasciigrave{}}\AttributeTok{0t4\_2014{-}2018}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{x2014\_2018\_3, }\StringTok{\textasciigrave{}}\AttributeTok{5t9\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_6, }\StringTok{\textasciigrave{}}\AttributeTok{5t9\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_7,}
+        \StringTok{\textasciigrave{}}\AttributeTok{10t14\_2000}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{ x2000\_10, }\StringTok{\textasciigrave{}}\AttributeTok{10t14\_2014{-}2018}\StringTok{\textasciigrave{}}\OtherTok{=}\NormalTok{ x2014\_2018\_11,}\StringTok{\textasciigrave{}}\AttributeTok{15t17\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_14, }\StringTok{\textasciigrave{}}\AttributeTok{15t17\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_15, }
+        \StringTok{\textasciigrave{}}\AttributeTok{18t34\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_18, }\StringTok{\textasciigrave{}}\AttributeTok{18t34\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_19, }\StringTok{\textasciigrave{}}\AttributeTok{35t49\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_22, }\StringTok{\textasciigrave{}}\AttributeTok{35t49\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_23,}
+        \StringTok{\textasciigrave{}}\AttributeTok{50t64\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_26, }\StringTok{\textasciigrave{}}\AttributeTok{50t64\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_27, }\StringTok{\textasciigrave{}}\AttributeTok{65t74\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_30, }\StringTok{\textasciigrave{}}\AttributeTok{65t74\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_31,}
+        \StringTok{\textasciigrave{}}\AttributeTok{75t84\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_34, }\StringTok{\textasciigrave{}}\AttributeTok{75t84\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_35, }\StringTok{\textasciigrave{}}\AttributeTok{85+\_2000}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2000\_38, }\StringTok{\textasciigrave{}}\AttributeTok{85+\_2014{-}2018}\StringTok{\textasciigrave{}} \OtherTok{=}\NormalTok{ x2014\_2018\_39}
+        
+\NormalTok{        ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\AttributeTok{cols =} \StringTok{\textasciigrave{}}\AttributeTok{0t4\_2000}\StringTok{\textasciigrave{}}\SpecialCharTok{:}\StringTok{\textasciigrave{}}\AttributeTok{85+\_2014{-}2018}\StringTok{\textasciigrave{}}\NormalTok{,}
+             \AttributeTok{names\_to =} \FunctionTok{c}\NormalTok{(}\StringTok{"age\_bracket"}\NormalTok{,}\StringTok{"year"}\NormalTok{),}
+             \AttributeTok{names\_pattern =} \StringTok{"(.*?)\_([0{-}9]+{-}[0{-}9]+|[0{-}9]+)"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{datatable}\NormalTok{(mysheets[[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{con }\OtherTok{\textless{}{-}} \FunctionTok{dbConnect}\NormalTok{(RPostgres}\SpecialCharTok{::}\FunctionTok{Postgres}\NormalTok{(), }\AttributeTok{user=}\StringTok{\textquotesingle{}postgres\textquotesingle{}}\NormalTok{, }\AttributeTok{password=}\StringTok{\textquotesingle{}zach\textquotesingle{}}\NormalTok{, }\AttributeTok{dbname=}\StringTok{\textquotesingle{}zach\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str\_replace\_all}\NormalTok{(}\FunctionTok{names}\NormalTok{(mysheets), }\FunctionTok{fixed}\NormalTok{(}\StringTok{" "}\NormalTok{), }\StringTok{""}\NormalTok{) }\OtherTok{{-}\textgreater{}}\NormalTok{list\_name}
+
+
+\NormalTok{list\_name }\OtherTok{\textless{}{-}} \FunctionTok{tolower}\NormalTok{(list\_name)}
+
+\NormalTok{a }\OtherTok{=} \DecValTok{1}
+ \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in}\NormalTok{ mysheets)\{}
+  \FunctionTok{dbWriteTable}\NormalTok{(con,}\AttributeTok{name =}\NormalTok{ list\_name[a],}\AttributeTok{value =}\NormalTok{i ,}\AttributeTok{row.names=}\ConstantTok{FALSE}\NormalTok{,}\AttributeTok{overwrite=}\ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{   a }\OtherTok{=}\NormalTok{ a }\SpecialCharTok{+}\DecValTok{1}
+\NormalTok{   \}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\KeywordTok{SELECT}\NormalTok{ table\_name}
+\KeywordTok{FROM}\NormalTok{ information\_schema.}\KeywordTok{tables}
+\KeywordTok{WHERE}\NormalTok{ table\_schema }\OperatorTok{=} \StringTok{\textquotesingle{}public\textquotesingle{}}
+\KeywordTok{ORDER} \KeywordTok{BY}\NormalTok{ table\_name;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-15}Displaying records 1 - 10}
+\centering
+\begin{tabular}[t]{l}
+\hline
+table\_name\\
+\hline
+table1\\
+\hline
+table10\\
+\hline
+table11\\
+\hline
+table12\\
+\hline
+table13\\
+\hline
+table14\\
+\hline
+table15\\
+\hline
+table16\\
+\hline
+table17\\
+\hline
+table18\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+ \KeywordTok{SELECT} \OperatorTok{*} \KeywordTok{FROM}\NormalTok{ table1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-16}Displaying records 1 - 10}
+\centering
+\begin{tabular}[t]{l|l|l|r}
+\hline
+neighborhood & pop\_type & year & value\\
+\hline
+Algiers Point & p & 2000 & 2381\\
+\hline
+Algiers Point & p & 2014-2018 & 2735\\
+\hline
+Algiers Point & t & 2000 & 1145\\
+\hline
+Algiers Point & t & 2014-2018 & 1326\\
+\hline
+Algiers Point & f & 2000 & 555\\
+\hline
+Algiers Point & f & 2014-2018 & 670\\
+\hline
+Audubon & p & 2000 & 14898\\
+\hline
+Audubon & p & 2014-2018 & 16374\\
+\hline
+Audubon & t & 2000 & 5700\\
+\hline
+Audubon & t & 2014-2018 & 4559\\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}
