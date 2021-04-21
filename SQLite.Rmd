@@ -38,8 +38,10 @@ SELECT * FROM bat1  ;
  
  
 ```{r}
+ 
+ 
 
-  dbWriteTable(con,name = "bat1",value =samp ,row.names=FALSE,overwrite=TRUE)
+ dbWriteTable(con,name = "bat1",value =samp ,row.names=FALSE,overwrite=TRUE)
 
 ```
  

@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,message = F,warning=F)
 ```
 
 ## R Markdown
@@ -28,3 +28,25 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+starwars
+```
+
+```{r}
+blond_wars <- starwars %>%
+  select(!c(films,vehicles,starships)) %>%
+  filter(hair_color=="blond")
+```
+
+```{r}
+write_csv(blond_wars,"blond_wars.csv")
+```
+
