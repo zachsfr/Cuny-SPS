@@ -1,0 +1,40 @@
+---
+title: 'DATA 607: Week 11 Discussion'
+author: "Zachary Safir"
+date: "4/26/2021"
+output: 
+  prettydoc::html_pretty:
+    theme: hpstr 
+    font-family: "New Times Roman"
+---
+
+## Introduction
+|   YouTube is unquestionably the most popular video platform on the internet. According to the latest statistics, as of 2021 YouTube has [2.3 billion](https://www.statista.com/statistics/272014/global-social-networks-ranked-by-number-of-users/) active users every month. These users have access to an ever-growing number of videos to watch. Every minute of every day, more than [500 hours of video content](https://www.tubefilter.com/2019/05/07/number-hours-video-uploaded-to-youtube-per-minute/) is uploaded to the website. There is no possible way for users to sort through all of this by themselves. So, how then does YouTube ensure that users can find content that will keep them on the website? 
+
+## Scenario Analysis
+|   The key questions that the owners YouTube need to answer can be broken down into three categories. How do you define a user? What are they trying to get out of YouTube? And how can we get the users to that content they would enjoy? 
+|
+|   YouTube has been testing different ways to approach these questions. Key among that now being the reduction of importance on subscriptions. As of now, if you subscribe to a content creator, unless you manually change this, you will only get occasional updates from them. In the place of those updates, YouTube will recommend similar content that has been performing better. Of course, this has been shown to be successful, as it both introduces users to new content, and the quality of one creator will not necessarily stay consistent, leading some subscribers to stop coming back. 
+|
+|   However, in the case of YouTube, another key piece to the experience are the content creators themselves who make the videos. According to public statements from YouTube, they feel that their algorithm represents the users, promoting what the audience wants. Often though, the algorithm ends up becoming the content. The YouTuber Vertasium explains this hypothesis beautifully in his video from 2019 [here](https://youtu.be/fHsa9DqmId8). However, to put it simply, as YouTube's algorithm constantly changes to try following the audience, the content creators then feel forced to follow and match what pleases the ever-changing algorithm to keep getting views. Rather than feeling free to make videos the way they want, instead content creators feel pressured to follow along. Those who do not comply, will no longer be shown to new users, and as a result their channels will not grow, no matter how good their content may be. 
+
+## Reverse Engineer
+|   YouTube has been experimenting with a wide variety of metrics to use for their recommendation algorithm. However, the current iteration appears to emphasize click through rate above all else. That is, the total number of times a video has been clicked on divided by the number of times the thumbnail and title have been shown. The result of this can been seen throughout the website. Content creators will spend a significant amount of time making their thumbnail and title as eye catching as possible. 
+
+## Recommendations  
+|   The current system of YouTube leaves content creators constantly guessing. Rather than focusing solely on their video content, they instead need to spend much of their time trying to figure out what they need to add or change so that the algorithm will favor them. If I were to recommend anything, it would be to put the emphasis on sensationalism behind. Give users quick surveys to more accurately figure out what they want to see. For content creators, give them more information and insight into how they can grow their channel. The current system leads to content creators feeling burnt out, as they are constantly playing a game of tag without knowing for sure what their chasing after. With both users and creators having more control, it will lead to a better YouTube. 
+
+
+## Citations 
+
+1. Mohsin, Maryam. “10 Youtube Statistics That You Need to Know in 2021.” Www.Oberlo.Com, 23 Apr. 2021, www.oberlo.com/blog/youtube-statistics#:%7E:text=YouTube%20has%202.3%20billion%20users,(YouTube%2C%202021).
+
+2. Mohsin, Maryam. “10 Youtube Statistics That You Need to Know in 2021.” Www.Oberlo.Com, 23 Apr. 2021, www.oberlo.com/blog/youtube-statistics#:%7E:text=YouTube%20has%202.3%20billion%20users,(YouTube%2C%202021).
+
+3. Statista. “Global Social Networks Ranked by Number of Users 2021.” Statista, 9 Feb. 2021, www.statista.com/statistics/272014/global-social-networks-ranked-by-number-of-users.
+ 
+4. Cooper, Paige. “How Does the YouTube Algorithm Work? A Guide to Getting More Views.” Social Media Marketing & Management Dashboard, 18 Aug. 2020, blog.hootsuite.com/how-the-youtube-algorithm-works/#.
+
+5. Veritasium. “My Video Went Viral. Here’s Why.” YouTube, uploaded by Veritasium, 19 May 2019, www.youtube.com/watch?v=fHsa9DqmId8.
+
+
