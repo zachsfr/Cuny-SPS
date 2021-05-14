@@ -1,0 +1,399 @@
+---
+title: "Data 607: Final Project"
+author: "Zachary Safir"
+date: "5/14/2021"
+output: 
+   html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    theme: flatly
+    highlight: breezedark
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T,message=F,warning = F)
+```
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(dygraphs) 
+library(xts)
+library(googledrive)
+library(cowplot)
+library(hrbrthemes)
+library(RColorBrewer)
+```
+
+
+## Introduction
+
+|   For this final project, I will be working with data-time data to learn how to handle this type of data within R. The data used in this project can be ascertained from Kaggle [here](https://www.kaggle.com/fivethirtyeight/uber-pickups-in-new-york-city). 
+|
+|   As written on the Kaggle page, this directory of nineteen csv files contain data on over 4.5 million Uber pickups in New York City from April to September 2014, and 14.3 million more Uber pickups from January to June 2015. Trip-level data on 10 other for-hire vehicle (FHV) companies, as well as aggregated data for 329 FHV companies, is also included. All the files are as they were received on August 3, Sept. 15 and Sept. 22, 2015. FiveThirtyEight, the organization proving this data, obtained the data from the NYC Taxi & Limousine Commission (TLC) by submitting a Freedom of Information Law request on July 20, 2015. 
+
+## Loading the Data
+|   The first and foremost piece of code below demonstrates a very practical approach to dealing with data separated into different files. This is a common situation that comes up often. In the past, I would choose the laborious approach of reading in each file individually. However, that is completely redundant and unnecessary. Using map from the purrr library, we can easily ingest all our data with one map command. 
+|
+|   Note that using map() will read in our CSV files in as a list of separate data-frames. In the case of our data, with the dataset containing roughly four separate groups of files, it did not make sense to read in our data as one large data frame. If your data can be handled that way, using the map_df() function will accomplish this. 
+|
+|   A limitation of larger data sets is that you cannot upload them on GitHub for easy access. The easiest free alternative is Google drive which allows users to upload files of any size, up to 15 Gbs for free. This does not allow for versioning and such of course however, for the purposes of this project it works as a perfect alternative. To access our data, we use the drive_download() function from the google drive library. 
+|
+|
+ 
+```{r}
+if(!file.exists('archive.zip')) {
+    drive_download(
+as_id("https://drive.google.com/file/d/1Wv8V6bANCWk6KryPV3eI_shlAkFOOKMn/view?usp=sharing"))
+
+unzip('archive.zip',exdir = "archive")
+
+  }
+```
+
+
+|
+|
+
+```{r}
+uber <-
+    list.files(path = "archive",
+               pattern = "*.csv", 
+               full.names = T) %>% 
+    map(~read_csv(., col_types = cols(.default = "c"))) 
+
+names(uber) <- list.files(path = "~/CUNY SPS/Cuny-SPS/Data/archive",
+               pattern = "*.csv")
+```
+
+
+|
+|
+
+|   Shown below is a look at the initial state of our data. We have our data read in in a list of data frames, named after their original file names. We will explore the major advantage of this format in the next part. 
+
+|
+|
+
+```{r, echo=F}
+knitr::include_graphics("https://i.gyazo.com/c3f1d882362375461eeac28c50d2ccf2.png")
+
+```
+
+
+
+
+
+## Data Handling 
+
+|   The key piece of our data is the date information given to us. However, the default format is not usable by R. We can use the lubridate package to re-shape our data into a more usable format. Before doing so however, we must inspect our data to learn and understand its shape. The order of the dates, as well as whether time is included, are a prerequisite to re-formatting the data. The lubridate functions require that we use, for example, a month-day-year function, the function mdy(), on data in that order. If we were to use the mdy() function on a date that is in a different order, say year-month-day, instead of re-formatting the data, we will instead produce a column full of NA variables. 
+|
+|   Shown in the images below is a sample of the various date columns within our data-frames. The columns on the left side are the same format, albeit with different casing in the name. The top right image has the same name as our other date columns however, it contains dates in a different order. The bottom right column adds the time information in as well but, thankfully, reflects this in the column name. 
+
+|
+|
+
+```{r echo=FALSE}
+
+# Requires the magick package to be installed to work, do not need to load it.
+
+p1 <- ggdraw() + draw_image("https://i.gyazo.com/801d3ae5870ffc0a8e9ce21de6e99d8c.png")
+
+p2 <- ggdraw() + draw_image("https://i.gyazo.com/92d29c3d202698630f8dc1239c2fb4c9.png")
+
+p3 <- ggdraw() + draw_image("https://i.gyazo.com/3bc37468db2b39ebe68baaf215ee7397.png")
+
+p4 <- ggdraw() + draw_image("https://i.gyazo.com/74798e5aeab424343c920b0c6a5ccf24.png")
+
+plot_grid(p1,p3, p2,p4)
+```
+
+|
+|
+
+|   Reformatting our list of data frames is breeze thanks in large part to the map function of purrr. Before using it however, we must correct the irregular column with the same name, but different date formatting. It only occurs in one data frame, so we only need to correct it once. Formatting it is extremely simple. We feed the column in question to the ymd() function, which  reflects the fact that our data is in the order of year-month-date. Once we do so, we change the name of the column so that we do not accidentally format it again in the next part. 
+
+|
+|
+
+```{r}
+ 
+uber$`other-Dial7_B00887.csv`$Date <-  ymd(uber$`other-Dial7_B00887.csv`$Date)  
+uber$`other-Dial7_B00887.csv` <- uber$`other-Dial7_B00887.csv` %>%
+  rename(dte=Date)
+```
+
+|
+|
+
+
+|   Now, we can explore the mapping function used below. As demonstrated, the map() method allows us to apply dpylr functions on every data-frame within our list, iterating over each implicitly. we remove any empty columns created when reading our data in and fix the issue of different casing on the date columns with the same format (DATE vs Date). 
+|
+|   Now, we can use dplyr's mutate method with across to reformat our date columns. The across() method makes it easy to apply the same transformation to multiple columns, allowing you to use select() semantics inside in "data-masking" functions like summarise() and mutate().
+|
+|   In the case of our data, we have two groups of date columns that we want to change. Dates in the format of month-year-day, and another set in the format of month-day-year-hour-minute-second. Within across() we can use the setdiff() and intersect() respectively to tell the two columns apart using starts_with() and ends_with(). Using intersect(), the columns selected will be those that start and end with the given information. So, in the case of our data, the columns that start with "da" and end with "me" would be the date/time columns. Using setdiff(), we get the opposite result, selecting only the date columns. 
+|
+|   With our selecting method set, we can use the proper lubridate function on each group of columns to reformat them. Once that is accomplished, lubridate provides a wide variety of handy methods that generate more granular time data. We can combine this with list() to generate new columns within our data frames. For example, we can create a column of simply the month piece from our original date, using month(). The other methods follow this naming scheme. Functions such as quarter(), week(), day(), wday() and so on. For both month and weekday, we can use the option label equal to True to create the name version of the date i.e., May rather than 05 and Tuesday rather than 02. 
+
+|   
+|
+
+```{r}
+ uber <- map(uber, ~ .x %>% remove_empty("cols")   %>%
+
+      rename_with(tolower ,  starts_with(c("Da","DA")))  %>%
+      
+      mutate(
+              across(setdiff(starts_with("da") , ends_with("me"))  , mdy),
+              across(setdiff(starts_with(c("da","dte")) , ends_with("me")),
+                     list(qtr = ~quarter(.),month = ~month(.,label = T),week = ~week(.),
+                          day = ~day(.),wday= ~wday(.,label = T) )),
+              
+              across(intersect(starts_with("da") , ends_with("me")), mdy_hms),
+              across(intersect(starts_with("da") , ends_with("me")), 
+                     list(qtr = ~quarter(.),month = ~month(.,label = T),week = ~week(.),
+                          day = ~day(.),wday= ~wday(.,label = T), date = ~as.Date(.),
+                          time = ~format(., format = "%H:%M:%S"),  hour = ~hour(.)))
+            )
+       )      
+ 
+```
+
+
+
+## Subsetting a List of Dataframes
+
+|   In this section we will discuss another important piece of working with a list of data frames, how to subset that data effectively. As mentioned previously, our data contains roughly four separate groups of data frames. How do we now go about pulling out the data frames for each group? We could manually select our desired frames by their numeric location. However, with this data at least, there is much easier approach. 
+|
+|   Shown below are the names of each of our data frames. Using the original Kaggle page as a reference, you may notice that each group of data sets contain shared name pieces. 
+
+|
+|
+```{r}
+as.tibble(names(uber))
+```
+|   
+|
+
+|   Indeed, we can use the original names of our files to group them. However, our normal go to method for filtering by name, filter() in dplyr, will not work on lists. Fortunately, purrr has keep() which accomplishes the same thing as filter() but can also be used on lists. Using the stringr package we can use str_detect() within keep() to grab only the data frames we want, and then we can use dplyr to bind them together creating one completed data frame. Finally, we use the janitor packages clean_names() to make our data easier to handle in R as names with a "/" in them, the original column name here was date/time, does not play nicely when you want to call that name specifically. The newly created data frame can be explored below.
+
+|
+|
+```{r} 
+fourteen_uber <-  keep(uber,str_detect(names(uber),"14.csv$")) %>%
+bind_rows() %>%
+  clean_names()
+
+```
+
+|
+|
+
+```{r,echo=F}
+fourteen_uber
+
+```
+
+
+
+|
+|
+
+## Summary Statistics 
+
+|   With our newly created dataset, we can now use the values we created to get some insights into our data. 
+|
+|   First, as shown below, we can see that the number of rides per month is steadily rising. From April to September, the number of rides per month almost doubles. 
+|
+
+```{r}
+fourteen_uber %>%
+  group_by(date_time_month) %>%
+  summarise( n=n()) %>%
+  arrange(desc(n))
+
+```
+
+|
+|   We can see that overall, Thursdays have the most number of rides. 
+|
+
+```{r}
+fourteen_uber %>%
+  group_by(date_time_wday) %>%
+  summarise( n=n()) %>%
+  arrange(desc(n))
+
+```
+
+
+|
+|   We also see that the days with the most rides varies by month 
+|
+
+
+```{r}
+fourteen_uber %>%
+  group_by(date_time_month,date_time_wday) %>%
+  summarise( count=n()) %>%
+slice_max(count, n = 2)
+```
+
+|
+|   Finally, we use our hour variable to figure out the peak hours for rides. As shown below, the peak number of rides occurs in the evening between 17:00 20:00.
+|
+
+```{r}
+fourteen_uber %>%              
+  group_by(date_time_hour) %>%                                                                                                                                              summarise(n =n()) %>%
+  top_n(5) %>% 
+    arrange(desc(n))
+                                                                                                 
+```
+
+|
+
+|   And we can further break down our data by month as did with the day of the week. There is much less variability in hour, with the top hour being the same for every month except September. 
+
+|
+
+```{r}
+fourteen_uber %>%
+  group_by(date_time_month,date_time_hour) %>%
+  summarise( count=n()) %>%
+slice_max(count, n = 3)
+```
+
+
+## Graphing our Data
+
+|   In this section, we will discuss various ways of graphing our time data. Starting off, we will graphically display some of the summary statistics. Our first graphic shows breakdown of Uber rides per-week. We transform the count to a percent to make our graph easier to read. The color is more useful in the next graphic but still makes it easier to till the days apart here. 
+
+|
+
+```{r}
+
+fourteen_uber %>%
+  count(date_time_wday)  %>% 
+  mutate(n_percent = round( ((n/sum(n))*100),2   ) ) %>%
+  ggplot(aes(date_time_wday,n_percent,fill=date_time_wday)) +
+  geom_bar(stat = "identity") +
+    labs(x="Day of the Week",y="Percent of Overall Trips",title = "Percent of Uber Rides per Week") +
+scale_fill_brewer(palette = "Paired") +
+  theme(legend.position = "none")
+  
+  
+  
+ 
+```
+
+|
+
+|   Our second plot breaks up our previous graphic into several subplots, split by month. We can now visually see the difference in rides accross each month. The color here makes it easy to compare each day between each sub-plot. 
+
+
+|
+
+```{r}
+fourteen_uber %>%
+  group_by(date_time_month ,date_time_wday) %>%
+  summarise( perc = n() ) %>% 
+ group_by(date_time_month) %>%
+   mutate(perc = round((perc/sum(perc)*100), 2) ) %>%
+  ggplot(aes(date_time_wday,perc,fill=date_time_wday)) +
+  geom_bar(stat = "identity") +
+scale_fill_brewer(palette = "Paired") + facet_wrap(~date_time_month) +
+  labs(x="Day of the Week",y="Percent of Overall Rides",title = "Percent of Uber Rides per Week Across Each Month") +
+  theme(legend.position = "none")
+
+
+```
+
+
+|
+|   Now we can do the same for the top hours. Here we chose the top hours to avoid having to graph 24 bars. Fortunately, our top hours are all grouped together, so we have nothing missing between. This would not work if the top hours were sporadic as we would  end up having a lot of empty space. 
+
+|
+
+```{r}
+fourteen_uber %>%
+  count(date_time_hour)  %>% 
+  mutate(n_percent = round( ((n/sum(n))*100),2   ) ) %>%
+  top_n(10) %>%
+  ggplot(aes(as.factor(date_time_hour),n_percent,fill=as.factor(date_time_hour))) +
+  geom_bar(stat = "identity") +
+    labs(x="Hour",y="Percent of Overall Trips",title = "Hours with the Highest Percent of Uber Rides") +
+scale_fill_brewer(palette = "Spectral") +
+  theme(legend.position = "none")
+```
+
+
+|   Now we can look across each month and see if the top hours vary at all. As seen in the summary statistics, only September differs in having a top performing hour of 18:00.
+
+
+|
+
+```{r}
+ fourteen_uber %>%
+  group_by(date_time_month,date_time_hour) %>%
+  summarise( perc = n() ) %>% 
+ group_by(date_time_month) %>%
+   mutate(perc = round((perc/sum(perc)*100), 2) )  %>%
+  slice_max(n=9,perc) %>%
+  ggplot(aes(as.factor(date_time_hour),perc,fill=as.factor(date_time_hour))) +
+  geom_bar(stat = "identity") +
+scale_fill_brewer(palette = "Spectral") + facet_wrap(~date_time_month) +
+  labs(x="Hour",y="Percent of Overall Rides",title = "Percent of Uber Rides per Hour Across Each Month") +
+  theme(legend.position = "none")
+
+```
+
+
+
+|   Now let us create some new data to use with our visualizations. We will calculate the daily number of Uber rides in our data. 
+In our first plot, we use ggplot to see how the number of rides changes over time. While giving a good overview of the overall trend occurring within the data, getting precise information on each point in this plot is a bit difficult. 
+
+|
+```{r}
+monthly_freq <- fourteen_uber %>% 
+  group_by(date_time_date) %>%
+  count() 
+
+```
+
+
+|
+
+```{r}
+
+ggplot(monthly_freq, aes(x=date_time_date,y=n) )+
+  geom_line( color="steelblue") + 
+  geom_point() +
+   labs(x="Day",y="Number of Rides",title = "Number of Rides from April to September") +
+
+  theme(axis.text.x=element_text(angle=60, hjust=1)) 
+```
+
+|
+
+
+|   We can fix this by using the dygraph package. Using dygraph(), we get a similar visual from above but, this graph is interctive. Allowing us to zoom in on intervals, and the top right corner also tells us the day of each point in our plot as we mouse over it. 
+
+|
+```{r}
+dygraph(xts(x= monthly_freq$n,order.by = monthly_freq$date_time_date)) %>%
+  dyOptions( drawPoints = TRUE, pointSize = 4 )
+
+```
+
+## Conclusion
+
+|   R has a variety of ways of handling date data. With a little bit of practice, R makes getting insights into your data an absolute breeze. We were able to take all nineteen of our csv files and fix them up to be ready for analysis without much effort thanks to map(). Once we have the data properly formatted into the date class, creating more concise variables, such as month and day of the week, is very simple. We can then use those new variables to get valuable information from out data. 
+|
+|   We were then able to create some interesting visuals that displayed trends within our data. You can make some very amazing graphics using ggplot(). The subplot method also makes it very easy to break up your visualizations based on a categorical variable so that you can see the differences between each. Being able to see the changes from month to month gave us much better insight into what days and hours were the busiest for Uber rides. The limitation of ggplot being of course that your graphics are all static. We can overcome this by using various libraries within R. The dygraph package is great for time series data, but of course is limited to only that. There are plenty of other options available as well. 
+|
+|   Some of the limitations this time were that, unfortunately, the Uber data we had was limited in scope, being only from April to September of 2014. However, that much alone created a ton of data that took a lot of processing time. Which leads me to the next limitation, computer power. As you work with larger datasets, your ability to do anything is limited by how powerful your machine is. My computer was able to handle this Uber data no problem. However, the yellow cab Taxi data for NYC was much larger and was too much for my computer to handle. 
+|
+|   Overall, I am very happy with what I was able to learn through working on this project. I hope that the examples I used here will help lead other people to using R in more efficient ways. I spent most of time figuring out how to spend less time getting things done. That way, once I have those methods mastered, I can spend more time getting to know my data instead, and in the process hopefully I will become a better data scientist. Thank you very much for taking the time to read my project. 
